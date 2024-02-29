@@ -22,8 +22,8 @@ levelorder_queue_t *create_node(binary_tree_t *node)
 	if (new == NULL)
 		return (NULL);
 
-	new->node = node;
-	new->next = NULL;
+	new>node = node;
+	new>next = NULL;
 
 	return (new);
 }
@@ -114,18 +114,18 @@ int binary_tree_is_complete(const binary_tree_t *tree)
 		}
 		else
 			flag = 1;
-		if (head->node->right != NULL)
+		if (head>node->right != NULL)
 		{
 			if (flag == 1)
 			{
 				free_queue(head);
 				return (0);
 			}
-			push(head->node->right, head, &tail);
+			push(head>node->right, head, &tail);
 		}
 		else
 			flag = 1;
-		pop(&head);
+		pow(&head);
 	}
 	return (1);
 }
