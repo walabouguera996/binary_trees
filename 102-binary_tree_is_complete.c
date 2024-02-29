@@ -1,131 +1,61 @@
 #include "binary_trees.h"
 
-levelorder_queue_t *create_node(binary_tree_t *node);
-void free_queue(levelorder_queue_t *head);
-void push(binary_tree_t *node, levelorder_queue_t *head,
-		levelorder_queue_t **tail);
-void pop(levelorder_queue_t **head);
-int binary_tree_is_complete(const binary_tree_t *tree);
-
 /**
- * create_node - Creates a new levelorder_queue_t node.
- * @node: The binary tree node for the new node to contain.
+ * binary_tree_size - measures the size of a binary tree.
+ * @tree: a pointer to the root node of the tree to measure the size.
  *
- * Return: If an error occurs, NULL.
- *         Otherwise, a pointer to the new node.
+ * Return: size of the tree or 0 if tree is NULL.
  */
-levelorder_queue_t *create_node(binary_tree_t *node)
+size_t binary_tree_size(const binary_tree_t *tree)
 {
-	levelorder_queue_t *new;
-
-	new = malloc(sizeof(levelorder_queue_t));
-	if (new == NULL)
-		return (NULL);
-
-	new>node = node;
-	new>next = NULL;
-
-	return (new);
-}
-
-/**
- * free_queue - Frees a levelorder_queue_t queue.
- * @head: A pointer to the head of the queue.
- */
-void free_queue(levelorder_queue_t *head)
-{
-	levelorder_queue_t *tmp;
-
-	while (head != NULL)
+	if (tree)
 	{
-		tmp = head->next;
-		free(head);
-		head = tmp;
+		size_t left_size = 0, right_size = 0;
+
+		left_size = tree->left ? binary_tree_size(tree->left) : 0;
+		right_size = tree->right ? binary_tree_size(tree->right) : 0;
+
+		return (left_size + right_size + 1);
 	}
+	return (0);
 }
 
 /**
- * push - Pushes a node to the back of a levelorder_queue_t queue.
- * @node: The binary tree node to print and push.
- * @head: A double pointer to the head of the queue.
- * @tail: A double pointer to the tail of the queue.
+ * helper - searches all binary tree nodes and determines
+ *	    if the tree is complete by returning specific values.
+ * @tree: a pointer to the root node of the tree to check.
+ * @index: node index to check.
+ * @size: size of the binary tree.
  *
- * Description: Upon malloc failure, exits with a status code of 1.
+ * Return: 0 if tree is NULL
+ *	     if tree is not complete.
+ *	   1 if tree is complete.
  */
-void push(binary_tree_t *node, levelorder_queue_t *head,
-		levelorder_queue_t **tail)
+int helper(const binary_tree_t *tree, size_t index, size_t size)
 {
-	levelorder_queue_t *new;
-
-	new = create_node(node);
-	if (new == NULL)
-	{
-		free_queue(head);
-		exit(1);
-	}
-	(*tail)->next = new;
-	*tail = new;
+	if (!tree)
+		return (1);
+	if (index >= size)
+		return (0);
+	return (helper(tree->left, (2 * index) + 1, size) &&
+			helper(tree->right, (2 * index) + 2, size));
 }
 
 /**
- * pop - Pops the head of a levelorder_queue_t queue.
- * @head: A double pointer to the head of the queue.
- */
-void pop(levelorder_queue_t **head)
-{
-	levelorder_queue_t *tmp;
-
-	tmp = (*head)->next;
-	free(*head);
-	*head = tmp;
-}
-
-/**
- * binary_tree_is_complete - Checks if a binary tree is complete.
- * @tree: A pointer to the root node of the tree to traverse.
+ * binary_tree_is_complete - checks if a binary tree is complete.
+ * @tree: a pointer to the root node of the tree to check
  *
- * Return: If the tree is NULL or not complete, 0.
- *         Otherwise, 1.
- *
- * Description: Upon malloc failure, exits with a status code of 1.
+ * Return: 1 if its complete
+ *	   0 if its not complete or tree is NULL.
  */
 int binary_tree_is_complete(const binary_tree_t *tree)
 {
-	levelorder_queue_t *head, *tail;
-	unsigned char flag = 0;
-
-	if (tree == NULL)
-		return (0);
-
-	head = tail = create_node((binary_tree_t *)tree);
-	if (head == NULL)
-		exit(1);
-
-	while (head != NULL)
+	if (tree)
 	{
-		if (head->node->left != NULL)
-		{
-			if (flag == 1)
-			{
-				free_queue(head);
-				return (0);
-			}
-			push(head->node->left, head, &tail);
-		}
-		else
-			flag = 1;
-		if (head>node->right != NULL)
-		{
-			if (flag == 1)
-			{
-				free_queue(head);
-				return (0);
-			}
-			push(head>node->right, head, &tail);
-		}
-		else
-			flag = 1;
-		pow(&head);
+		size_t size;
+
+		size = binary_tree_size(tree);
+		return (helper(tree, 0, size));
 	}
-	return (1);
+	return (0);
 }
